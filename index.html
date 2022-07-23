@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>O pudim</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 9;
+            box-sizing: border-box;
+        }
+
+        body{
+            overflow: none;
+        }
+
+        section{
+            width: 100%;
+            height: 300px;
+            position: relative;
+            margin: 150px auto;
+            border-bottom: 2px solid black;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        section div.player{
+            background-image: url('player.png');
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-position: center;
+            width: 8%;
+            height: 155px;
+            position: absolute;
+            left: 20px;
+            top: 146px;
+        }
+
+        .jump{
+            animation: jump 500ms ease-out;
+        }
+
+        @keyframes jump{
+            0%{
+                top: 146px;
+            }
+
+            20%{
+                top: -20px;
+            }
+
+            50%{
+                top: -20px;
+            }
+
+            75%{
+                top: -20px;
+            }
+
+            100%{
+                top: 146px;
+            }
+        }
+
+        section div.enemy1{
+            background-image: url('colher.png');
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-position: center;
+            transform: rotate(135deg);
+            width: 8%;
+            height: 155px;
+            position: absolute;
+            top: 146px;
+        }
+
+        .animation-enemy{
+            animation: enemy-animation 2s infinite linear;
+        }
+
+        @keyframes enemy-animation{
+            from{
+                right: -8%;
+            }
+
+            to{
+                right: 100%;
+            }
+        }
+
+        h2{
+            width: 10%;
+            font-size: 25pt;
+            font-weight: bold;
+            text-align: center;
+            margin: auto;
+            position: absolute;
+            left: 50%;
+            bottom: 80%;
+            transform: translate(-50%);
+            z-index: 2;
+        }
+
+        div.restart{
+            position: absolute;
+            left: 50%;
+            top: 49%;
+            transform: translate(-50%,-50%);
+            z-index: 3;
+            display: none;
+            width: 20%;
+            height: 15%;
+            flex-direction: column;
+        }
+
+        div.restart h2{
+            width: 100%;
+            font-weight: normal;
+            font-size: 25pt;
+        }
+
+        div.restart h2 span{
+            font-weight: bold;
+        }
+
+        div.restart button{
+            margin: 10% auto;
+            width: 50%;
+            height: 25%;
+            background-color: black;
+            color: white;
+            font-weight: bold;
+            outline: 0;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        div.restart button:hover{
+            background-color: rgb(73, 73, 73);
+            color: white;
+        }
+
+    </style>
+</head>
+<body>
+    <section>
+        <div class="player"></div>
+        <div class="enemy1 animation-enemy"></div>
+    </section>
+    <h2>Pontuação: <span>1</span></h2>
+ 
+
+    <div class="restart">
+        <h2>Aperte <span>ENTER</span> ou clique no botão para recomeçar.</h2>
+        <button>RESTART</button>
+    </div>
+
+    <script defer>
+    
+        var naocolidiu = true
+        setInterval(() => {
+            
+            let player = document.querySelector(".player")
+            let enemy = document.querySelector(".enemy1")
+            let velocidade = 0
+            let restart = document.querySelector(".restart")
+
+            //Sistema pra identificar a tecla
+            document.onkeypress = function (evt) { 
+                let key = evt.keyCode
+                if(naocolidiu == true){
+                    if(key == 32 || key == 119){
+                        //Sistema de pulo
+                        player.classList.add("jump")
+                         setTimeout(() => {
+                            player.classList.remove("jump")
+                        }, 500);
+                    }
+                }
+                
+            } 
+
+            //Sistema de colisão
+            
+            if((((player.offsetLeft + player.style.width) >= enemy.offsetLeft) && player.offsetTop == enemy.offsetTop)){
+                naocolidiu = false;
+                enemy.classList.remove("animation-enemy")
+                restart.style.display = "flex"
+            } 
+            
+            
+
+
+            if(naocolidiu==true){
+                //Sistema de pontuação
+                let pontos = parseInt(document.querySelector("h2 span").innerHTML) + 1
+                document.querySelector("h2 span").innerHTML = pontos
+
+                //Sistema de corrida
+                velocidade += 15
+                if(velocidade >= 450){
+                    velocidade = 25
+                }
+                let left = player.offsetLeft + velocidade
+                if(left >= ( window.screen.width - 160)){
+                    left = -5
+                }
+                x = left
+                player.style.left = `${left}px`          
+            }
+
+            if(restart.style.display == "flex" && naocolidiu==false){
+                restart.querySelector("button").addEventListener("click",()=>{
+                    naocolidiu=true
+                    player.style.left = "20px"
+                    enemy.style.right = "-8%"
+                    enemy.classList.add("animation-enemy")
+                    restart.style.display = "none"
+                    document.querySelector("h2 span").innerHTML = "1"
+                })
+                document.onkeypress = (evt)=>{
+                    let key = evt.keyCode
+                    if(key == 13){
+                        naocolidiu=true
+                        player.style.left = "20px"
+                        enemy.style.right = "-8%"
+                        enemy.classList.add("animation-enemy")
+                        restart.style.display = "none"
+                        document.querySelector("h2 span").innerHTML = "1"
+                    }
+                }
+            }
+            
+        }, 200); 
+        
+    </script>
+</body>
+</html>
